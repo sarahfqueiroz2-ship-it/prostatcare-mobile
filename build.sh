@@ -11,4 +11,3 @@ python manage.py migrate
 # (definidas no painel do Render). Se o usuário já existir, ignora o erro
 # e continua o deploy normalmente — não precisa de acesso a Shell.
 python manage.py createsuperuser --noinput || true
-python manage.py criar_admin
