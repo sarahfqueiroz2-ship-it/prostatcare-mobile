@@ -11,3 +11,9 @@ python manage.py migrate
 # (definidas no painel do Render). Funciona mesmo sem acesso a Shell, e não
 # quebra o build se o usuário já existir.
 python manage.py bootstrap_admin
+
+# Gera um paciente de teste com leituras aleatórias, só se a variável de
+# ambiente CRIAR_DADOS_TESTE estiver definida como "true" no painel do Render.
+if [ "$CRIAR_DADOS_TESTE" = "true" ]; then
+  python manage.py criar_dados_teste
+fi
