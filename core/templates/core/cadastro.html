@@ -1,0 +1,110 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Cadastro — ProstatCare Mobile{% endblock %}
+{% block nav_cadastro %}active{% endblock %}
+{% block page_title %}Cadastro{% endblock %}
+{% block page_subtitle %}Cadastre pacientes{% if pode_cadastrar_funcionario %} e funcionários{% endif %}{% endblock %}
+{% block role_chip %}{{ role|capfirst }}{% endblock %}
+{% block user_role %}{{ role|capfirst }}{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="card" style="border-color:var(--blue);color:var(--blue-dark);font-size:13px;">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+<div class="card">
+  <div class="tabs">
+    <div class="tab {% if tipo_ativo == 'paciente' %}active{% endif %}" data-tab="paciente" onclick="showTab('paciente', this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Paciente
+    </div>
+    {% if pode_cadastrar_funcionario %}
+    <div class="tab {% if tipo_ativo == 'funcionario' %}active{% endif %}" data-tab="funcionario" onclick="showTab('funcionario', this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Funcionário
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="tab-panel {% if tipo_ativo == 'paciente' %}active{% endif %}" id="panel-paciente">
+    <form method="post" action="">
+      {% csrf_token %}
+      <input type="hidden" name="tipo" value="paciente">
+      <div class="grid-2">
+        <div class="field">
+          <label>Nome completo</label>
+          {{ paciente_form.nome_completo }}
+          {% if paciente_form.nome_completo.errors %}<small style="color:var(--red);">{{ paciente_form.nome_completo.errors.0 }}</small>{% endif %}
+        </div>
+        <div class="field">
+          <label>CPF (só números)</label>
+          {{ paciente_form.cpf }}
+          {% if paciente_form.cpf.errors %}<small style="color:var(--red);">{{ paciente_form.cpf.errors.0 }}</small>{% endif %}
+        </div>
+        <div class="field"><label>Data de nascimento</label>{{ paciente_form.data_nascimento }}</div>
+        <div class="field"><label>Telefone</label>{{ paciente_form.telefone }}</div>
+        <div class="field"><label>E-mail</label>{{ paciente_form.email }}</div>
+        <div class="field"><label>Endereço</label>{{ paciente_form.endereco }}</div>
+        <div class="field">
+          <label>Senha de acesso</label>
+          {{ paciente_form.senha }}
+          {% if paciente_form.senha.errors %}<small style="color:var(--red);">{{ paciente_form.senha.errors.0 }}</small>{% endif %}
+        </div>
+        <div class="field"><label>Dispositivo vinculado</label>{{ paciente_form.dispositivo }}</div>
+      </div>
+      <div class="form-actions">
+        <button type="reset" class="btn btn-outline btn-sm">Cancelar</button>
+        <button type="submit" class="btn btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Salvar paciente
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if pode_cadastrar_funcionario %}
+  <div class="tab-panel {% if tipo_ativo == 'funcionario' %}active{% endif %}" id="panel-funcionario">
+    <form method="post" action="">
+      {% csrf_token %}
+      <input type="hidden" name="tipo" value="funcionario">
+      <div class="grid-2">
+        <div class="field">
+          <label>Nome completo</label>
+          {{ funcionario_form.nome_completo }}
+          {% if funcionario_form.nome_completo.errors %}<small style="color:var(--red);">{{ funcionario_form.nome_completo.errors.0 }}</small>{% endif %}
+        </div>
+        <div class="field">
+          <label>CPF / matrícula</label>
+          {{ funcionario_form.cpf }}
+          {% if funcionario_form.cpf.errors %}<small style="color:var(--red);">{{ funcionario_form.cpf.errors.0 }}</small>{% endif %}
+        </div>
+        <div class="field"><label>Cargo</label>{{ funcionario_form.cargo }}</div>
+        <div class="field"><label>Telefone</label>{{ funcionario_form.telefone }}</div>
+        <div class="field"><label>E-mail</label>{{ funcionario_form.email }}</div>
+        <div class="field"><label>Unidade / localidade</label>{{ funcionario_form.localidade }}</div>
+        <div class="field">
+          <label>Senha de acesso</label>
+          {{ funcionario_form.senha }}
+          {% if funcionario_form.senha.errors %}<small style="color:var(--red);">{{ funcionario_form.senha.errors.0 }}</small>{% endif %}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="reset" class="btn btn-outline btn-sm">Cancelar</button>
+        <button type="submit" class="btn btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          Salvar funcionário
+        </button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/app.js' %}"></script>
+{% endblock %}

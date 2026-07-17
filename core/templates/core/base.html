@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}ProstatCare Mobile{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 7 4-14 2 7h6"/></svg>
+      </div>
+      <div><span>ProstatCare</span><small>Mobile</small></div>
+    </div>
+
+    <div id="nav">
+      {% if role != 'paciente' %}
+      <a href="{% url 'core:cadastro' %}" class="nav-item {% block nav_cadastro %}{% endblock %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+        Cadastro
+      </a>
+      {% endif %}
+      <a href="{% url 'core:relatorio' %}" class="nav-item {% block nav_relatorio %}{% endblock %}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/></svg>
+        Gráfico e relatório
+      </a>
+      <a href="{% url 'core:logout' %}" class="nav-item">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sair
+      </a>
+    </div>
+
+    <div class="sidebar-user">Perfil: {% block user_role %}{{ role|capfirst }}{% endblock %}</div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h2>{% block page_title %}{% endblock %}</h2>
+        <p>{% block page_subtitle %}{% endblock %}</p>
+      </div>
+      <span class="chip">{% block role_chip %}{{ role|capfirst }}{% endblock %}</span>
+    </div>
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

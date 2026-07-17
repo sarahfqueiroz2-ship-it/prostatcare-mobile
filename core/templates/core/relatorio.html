@@ -1,0 +1,190 @@
+{% extends "core/base.html" %}
+{% load static l10n %}
+
+{% block title %}Gráfico e relatório — ProstatCare Mobile{% endblock %}
+{% block nav_relatorio %}active{% endblock %}
+{% block page_title %}Gráfico e relatório{% endblock %}
+{% block page_subtitle %}Evolução das medições e emissão do relatório{% endblock %}
+{% block role_chip %}{{ role|capfirst }}{% endblock %}
+{% block user_role %}{{ role|capfirst }}{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="card" style="border-color:var(--blue);color:var(--blue-dark);font-size:13px;">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if role != 'paciente' %}
+<form method="get" action="" class="search-row">
+  <input type="text" name="q" placeholder="Buscar paciente por nome, CPF ou ID" value="{{ request.GET.q }}">
+  <button type="submit" class="btn btn-sm">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    Buscar
+  </button>
+</form>
+
+{% if resultados %}
+<div class="card">
+  {% for p in resultados %}
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span>{{ p.nome_completo }} — CPF {{ p.cpf }}</span>
+      <a href="?paciente_id={{ p.id }}" class="chip" style="cursor:pointer;">Selecionar</a>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endif %}
+
+{% if not paciente %}
+<div class="card" style="color:var(--gray);font-size:13px;">
+  {% if role == 'paciente' %}
+    Nenhuma leitura registrada ainda.
+  {% else %}
+    Busque um paciente acima para ver o gráfico e o relatório.
+  {% endif %}
+</div>
+{% else %}
+
+<div class="card">
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/></svg>
+    {{ paciente.nome_completo }} — CPF {{ paciente.cpf }} — ID PAC-{{ paciente.id|stringformat:"04d" }}
+  </h3>
+
+  {% if grafico %}
+  <svg viewBox="0 0 640 225" width="100%" height="240">
+    {% for marcacao in grafico.marcacoes_y %}
+      <line x1="{{ grafico.left }}" y1="{{ marcacao.y }}" x2="{{ grafico.right }}" y2="{{ marcacao.y }}" stroke="#EEF2F5"/>
+      <text x="{{ grafico.eixo_y_label_x }}" y="{{ marcacao.label_y }}" font-size="10" fill="#6B7A87" text-anchor="end">{{ marcacao.valor }}</text>
+    {% endfor %}
+    <line x1="{{ grafico.left }}" y1="{{ grafico.top }}" x2="{{ grafico.left }}" y2="{{ grafico.bottom }}" stroke="#DCE6EE"/>
+    <line x1="{{ grafico.left }}" y1="{{ grafico.bottom }}" x2="{{ grafico.right }}" y2="{{ grafico.bottom }}" stroke="#DCE6EE"/>
+    <line x1="{{ grafico.left }}" y1="{{ grafico.ref_y }}" x2="{{ grafico.right }}" y2="{{ grafico.ref_y }}" stroke="#D9564C" stroke-dasharray="4 4"/>
+    <text x="{{ grafico.ref_label_x }}" y="{{ grafico.ref_label_y }}" font-size="10" fill="#D9564C">4.0 ng/mL (ref.)</text>
+    <polyline fill="none" stroke="#4FA3D9" stroke-width="2.5" points="{{ grafico.polyline }}"/>
+    {% for ponto in grafico.pontos %}
+      <circle cx="{{ ponto.x }}" cy="{{ ponto.y }}" r="4" fill="{% if ponto.alerta %}#D9564C{% else %}#4FA3D9{% endif %}"/>
+      {% if ponto.cor_hex %}
+      <rect x="{{ ponto.quad_x }}" y="{{ ponto.quad_y }}" width="10" height="10" rx="2" fill="{{ ponto.cor_hex }}" stroke="#1F2D3A" stroke-width="0.6">
+        <title>Risco {{ ponto.nivel_risco }}</title>
+      </rect>
+      {% endif %}
+      <text x="{{ ponto.x }}" y="{{ grafico.eixo_x_label_y }}" font-size="9" fill="#6B7A87" text-anchor="middle">{{ ponto.label }}</text>
+    {% endfor %}
+    <text x="14" y="{{ grafico.top }}" font-size="10" fill="#6B7A87" transform="rotate(-90 14 {{ grafico.titulo_y_pos }})" text-anchor="middle">ng/mL</text>
+  </svg>
+  <div class="legend">
+    <span><i></i> Medição de PSA (ng/mL)</span>
+    <span><i class="ref"></i> Faixa de referência</span>
+    <span><i style="background:#9FADB8;width:10px;height:10px;border-radius:2px;"></i> Cor lida (indicador de risco)</span>
+  </div>
+  {% else %}
+  <p style="color:var(--gray);font-size:13px;">Este paciente ainda não tem leituras registradas.</p>
+  {% endif %}
+</div>
+
+{% if ultima_leitura %}
+<div class="card">
+  <div class="report-header">
+    <div>
+      <div class="report-title">Relatório de acompanhamento</div>
+      <div class="report-sub">Última leitura em {{ ultima_leitura.data_hora|date:"d/m/Y H:i" }}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+      {% if classificacao_atual %}
+      <span class="badge-alert" style="{% if classificacao_atual.nivel_risco == 'alto' %}background:#FBEAE9;color:#D9564C;{% elif classificacao_atual.nivel_risco == 'moderado' %}background:#FCF3E3;color:#B9770E;{% else %}background:#EAF6EF;color:#2E8B57;{% endif %}">
+        <span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:{{ classificacao_atual.cor_hex }};border:1px solid rgba(0,0,0,.2);"></span>
+        Risco {{ classificacao_atual.get_nivel_risco_display }}
+      </span>
+      {% endif %}
+      {% if ultima_leitura.fora_da_referencia %}
+      <span class="badge-alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        Valor acima da referência ({{ ultima_leitura.medicao }} ng/mL)
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Dados do paciente
+  </h3>
+  <div class="kv" style="margin-bottom:18px;">
+    <div><span>Nome</span>{{ paciente.nome_completo }}</div>
+    <div><span>CPF</span>{{ paciente.cpf }}</div>
+    <div><span>ID</span>PAC-{{ paciente.id|stringformat:"04d" }}</div>
+    <div><span>Data de nascimento</span>{{ paciente.data_nascimento|date:"d/m/Y"|default:"—" }}</div>
+  </div>
+
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    Campo de observação
+  </h3>
+
+  {% if role in 'admin,funcionario' and relatorio_form %}
+  <form method="post" action="?paciente_id={{ paciente.id }}">
+    {% csrf_token %}
+    <input type="hidden" name="emitir_relatorio" value="1">
+    <div class="field">
+      {{ relatorio_form.observacao }}
+    </div>
+
+    <h3>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Responsável pela leitura
+    </h3>
+    <div class="kv" style="margin-bottom:18px;">
+      <div><span>Funcionário</span>{{ ultima_leitura.funcionario.nome_completo|default:"—" }}</div>
+      <div><span>Cargo</span>{{ ultima_leitura.funcionario.cargo|default:"—" }}</div>
+      <div><span>ID do dispositivo</span>{{ ultima_leitura.dispositivo.identificador }}</div>
+      <div><span>Localidade</span>{{ ultima_leitura.dispositivo.localidade }}</div>
+    </div>
+
+    <h3>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      Assinatura
+    </h3>
+    <div class="field">
+      {{ relatorio_form.assinatura_nome }}
+    </div>
+    {% if relatorio_existente.assinado %}
+      <p style="font-size:12px;color:var(--gray);">Assinado em {{ relatorio_existente.assinado_em|date:"d/m/Y H:i" }}</p>
+    {% endif %}
+
+    <div class="form-actions">
+      {% if relatorio_existente %}
+      <a href="{% url 'core:relatorio_pdf' paciente.id %}" class="btn btn-outline btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Baixar PDF
+      </a>
+      {% endif %}
+      <button type="submit" class="btn btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Emitir relatório
+      </button>
+    </div>
+  </form>
+
+  {% else %}
+    <p style="font-size:13px;">{{ relatorio_existente.observacao|default:"Nenhuma observação registrada." }}</p>
+    <div class="kv" style="margin-bottom:18px;">
+      <div><span>Funcionário</span>{{ ultima_leitura.funcionario.nome_completo|default:"—" }}</div>
+      <div><span>ID do dispositivo</span>{{ ultima_leitura.dispositivo.identificador }}</div>
+      <div><span>Localidade</span>{{ ultima_leitura.dispositivo.localidade }}</div>
+    </div>
+    {% if relatorio_existente %}
+    <div class="form-actions">
+      <a href="{% url 'core:relatorio_pdf' paciente.id %}" class="btn btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Baixar PDF
+      </a>
+    </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

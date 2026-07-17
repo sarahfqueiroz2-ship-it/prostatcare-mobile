@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 2cm; }
+  body { font-family: Helvetica, Arial, sans-serif; color: #1F2D3A; font-size: 11px; }
+  h1 { font-size: 18px; color: #2E7CB0; margin-bottom: 2px; }
+  .sub { color: #6B7A87; font-size: 10px; margin-bottom: 18px; }
+  h2 { font-size: 13px; color: #2E7CB0; border-bottom: 1px solid #DCE6EE; padding-bottom: 4px; margin-top: 18px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  td, th { padding: 5px 6px; border: 1px solid #DCE6EE; font-size: 10px; text-align: left; }
+  th { background-color: #EAF4FB; color: #2E7CB0; }
+  .alerta { color: #D9564C; font-weight: bold; }
+  .kv-table td.label { color: #6B7A87; width: 35%; }
+  .grafico-img { width: 100%; max-width: 480px; margin-top: 6px; }
+  .badge { display: inline-block; padding: 3px 8px; background-color: #FBEAE9; color: #D9564C; font-size: 10px; }
+  .badge-risco { display: inline-block; padding: 3px 8px; font-size: 10px; margin-left: 6px; }
+  .risco-alto { background-color: #FBEAE9; color: #D9564C; }
+  .risco-moderado { background-color: #FCF3E3; color: #B9770E; }
+  .risco-baixo { background-color: #EAF6EF; color: #2E8B57; }
+  .quad-cor { display: inline-block; width: 9px; height: 9px; margin-right: 4px; border: 1px solid #1F2D3A; }
+  .assinatura-bloco { margin-top: 55px; }
+  .assinatura-linha { border-top: 1px solid #1F2D3A; width: 320px; padding-top: 4px; }
+  .assinatura-legenda { font-size: 9px; color: #6B7A87; }
+</style>
+</head>
+<body>
+  <h1>Relatório de acompanhamento — ProstatCare Mobile</h1>
+  <div class="sub">
+    Gerado em {{ gerado_em|date:"d/m/Y H:i" }}
+    {% if classificacao_atual %}
+    <span class="badge-risco risco-{{ classificacao_atual.nivel_risco }}">
+      <span class="quad-cor" style="background-color:{{ classificacao_atual.cor_hex }};"></span>
+      Risco {{ classificacao_atual.get_nivel_risco_display }}
+    </span>
+    {% endif %}
+  </div>
+
+  <h2>Evolução das medições</h2>
+  {% if grafico_imagem %}
+  <img class="grafico-img" src="{{ grafico_imagem }}" />
+  {% else %}
+  <p>Este paciente ainda não tem leituras registradas.</p>
+  {% endif %}
+
+  <table>
+    <tr><th>Data</th><th>Medição (ng/mL)</th><th>Situação</th></tr>
+    {% for l in leituras %}
+    <tr>
+      <td>{{ l.data_hora|date:"d/m/Y H:i" }}</td>
+      <td>{{ l.medicao }}</td>
+      <td>{% if l.fora_da_referencia %}<span class="alerta">Acima da referência</span>{% else %}Normal{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if ultima_leitura.fora_da_referencia %}
+  <p><span class="badge">Última leitura acima da referência: {{ ultima_leitura.medicao }} ng/mL</span></p>
+  {% endif %}
+
+  <h2>Dados do paciente</h2>
+  <table class="kv-table">
+    <tr><td class="label">Nome</td><td>{{ paciente.nome_completo }}</td></tr>
+    <tr><td class="label">CPF</td><td>{{ paciente.cpf }}</td></tr>
+    <tr><td class="label">ID</td><td>PAC-{{ paciente.id|stringformat:"04d" }}</td></tr>
+    <tr><td class="label">Data de nascimento</td><td>{{ paciente.data_nascimento|date:"d/m/Y"|default:"—" }}</td></tr>
+  </table>
+
+  <h2>Campo de observação</h2>
+  <p>{{ relatorio.observacao|default:"Nenhuma observação registrada."|linebreaks }}</p>
+
+  <h2>Responsável pela leitura</h2>
+  <table class="kv-table">
+    <tr><td class="label">Funcionário</td><td>{{ ultima_leitura.funcionario.nome_completo|default:"—" }}</td></tr>
+    <tr><td class="label">Cargo</td><td>{{ ultima_leitura.funcionario.cargo|default:"—" }}</td></tr>
+    <tr><td class="label">ID do dispositivo</td><td>{{ ultima_leitura.dispositivo.identificador }}</td></tr>
+    <tr><td class="label">Localidade</td><td>{{ ultima_leitura.dispositivo.localidade }}</td></tr>
+  </table>
+
+  <div class="assinatura-bloco">
+    <div class="assinatura-linha">
+      <div class="assinatura-legenda">
+        Assinatura do responsável
+        {% if relatorio.assinatura_nome %} — {{ relatorio.assinatura_nome }}{% endif %}
+        {% if relatorio.assinado_em %} ({{ relatorio.assinado_em|date:"d/m/Y" }}){% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

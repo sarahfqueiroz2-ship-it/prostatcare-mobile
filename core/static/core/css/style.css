@@ -1,0 +1,169 @@
+:root{
+  --blue: #4FA3D9;
+  --blue-dark: #2E7CB0;
+  --blue-light: #EAF4FB;
+  --blue-lighter: #F5FAFD;
+  --ink: #1F2D3A;
+  --gray: #6B7A87;
+  --gray-light: #9FADB8;
+  --border: #DCE6EE;
+  --white: #FFFFFF;
+  --red: #D9564C;
+  --red-light: #FBEAE9;
+  --radius: 10px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--blue-lighter);
+  color:var(--ink);
+}
+a{color:inherit;text-decoration:none;}
+
+/* ---------- LOGIN ---------- */
+.login-wrap{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,var(--blue-light) 0%, var(--blue-lighter) 60%);
+}
+.login-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:40px 36px;
+  width:340px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(46,124,176,0.08);
+}
+.login-logo{
+  width:56px;height:56px;border-radius:14px;background:var(--blue);
+  margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
+  color:#fff;
+}
+.login-card h1{font-size:18px;margin:0 0 4px;}
+.login-card p{font-size:13px;color:var(--gray);margin:0 0 24px;}
+.field-icon{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--border);
+  border-radius:8px;background:var(--blue-lighter);padding:0 12px;margin-bottom:12px;
+}
+.field-icon svg{flex-shrink:0;color:var(--gray-light);}
+.field-icon input{
+  flex:1;border:none;background:transparent;padding:11px 0;font-size:14px;outline:none;
+}
+.btn{
+  width:100%;padding:11px;border:none;border-radius:8px;background:var(--blue);
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover{background:var(--blue-dark);}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--ink);}
+.btn-sm{width:auto;padding:9px 18px;}
+.device-status{
+  margin-top:18px;padding:10px 12px;background:var(--blue-light);border-radius:8px;
+  font-size:12px;color:var(--blue-dark);display:flex;align-items:center;gap:8px;justify-content:center;
+}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+.role-pick{display:flex;gap:8px;margin-top:20px;}
+.role-pick label{flex:1;}
+.role-pick input{display:none;}
+.role-pick span{
+  display:block;padding:8px;font-size:12px;border-radius:7px;border:1px solid var(--border);
+  background:#fff;cursor:pointer;color:var(--gray);text-align:center;
+}
+.role-pick input:checked + span{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* ---------- APP SHELL (cadastro / relatório) ---------- */
+.app{max-width:1200px;margin:0 auto;min-height:100vh;display:flex;}
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--white);border-right:1px solid var(--border);
+  padding:24px 16px;min-height:100vh;
+}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding:0 8px;}
+.brand-mark{
+  width:32px;height:32px;border-radius:9px;background:var(--blue);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+}
+.brand span{font-weight:700;font-size:15px;}
+.brand small{display:block;font-size:10px;color:var(--gray-light);font-weight:400;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;
+  font-size:13px;color:var(--gray);cursor:pointer;margin-bottom:2px;
+}
+.nav-item svg{flex-shrink:0;}
+.nav-item:hover{background:var(--blue-lighter);}
+.nav-item.active{background:var(--blue-light);color:var(--blue-dark);font-weight:600;}
+.sidebar-user{
+  margin-top:24px;padding-top:16px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--gray-light);padding-left:8px;
+}
+
+.main{flex:1;padding:28px 36px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.topbar h2{font-size:19px;margin:0;}
+.topbar p{font-size:12px;color:var(--gray);margin:2px 0 0;}
+.chip{
+  font-size:11px;background:var(--blue-light);color:var(--blue-dark);padding:4px 10px;
+  border-radius:20px;font-weight:600;
+}
+
+.card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;margin-bottom:16px;
+}
+.card h3{font-size:14px;margin:0 0 14px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+
+/* tabs (cadastro paciente / funcionario) */
+.tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--border);}
+.tab{
+  padding:10px 16px;font-size:13px;color:var(--gray);cursor:pointer;
+  border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;
+}
+.tab.active{color:var(--blue-dark);border-color:var(--blue);font-weight:600;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--gray);margin-bottom:5px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;
+  font-size:13px;background:var(--blue-lighter);font-family:inherit;
+}
+.field textarea{resize:vertical;min-height:70px;}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px;}
+
+/* gráfico */
+.search-row{display:flex;gap:10px;margin-bottom:16px;}
+.search-row input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:13px;background:var(--blue-lighter);}
+.legend{display:flex;gap:16px;font-size:11px;color:var(--gray);margin-top:10px;}
+.legend span{display:inline-flex;align-items:center;gap:5px;}
+.legend i{width:14px;height:2px;background:var(--blue);display:inline-block;}
+.legend i.ref{background:var(--red);}
+
+/* relatório */
+.report-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.report-title{font-size:16px;font-weight:700;}
+.report-sub{font-size:12px;color:var(--gray);}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px;}
+.kv div span{display:block;font-size:11px;color:var(--gray);margin-bottom:2px;}
+.sig-box{
+  border:1px dashed var(--gray-light);border-radius:8px;height:70px;
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;
+  font-size:11px;color:var(--gray-light);margin-top:8px;gap:6px;
+}
+.badge-alert{
+  background:var(--red-light);color:var(--red);font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;
+}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:12px;}
+.stat-icon{
+  width:36px;height:36px;border-radius:9px;background:var(--blue-light);color:var(--blue-dark);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.stat-label{font-size:11px;color:var(--gray);margin-bottom:4px;}
+.stat-value{font-size:20px;font-weight:700;}

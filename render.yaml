@@ -1,0 +1,26 @@
+databases:
+  - name: prostatcare-db
+    plan: free
+
+services:
+  - type: web
+    name: prostatcare-mobile
+    env: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn prostatcare.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prostatcare-db
+          property: connectionString
