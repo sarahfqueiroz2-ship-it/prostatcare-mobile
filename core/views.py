@@ -9,6 +9,8 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView, View, ListView, DetailView, CreateView, UpdateView
 from xhtml2pdf import pisa
 
 import matplotlib
@@ -291,25 +293,5 @@ class SearchView(LoginRequiredMixin, TemplateView):
                 Q(user__cpf__icontains=query)
             )[:20]
             context['pacientes'] = pacientes
-            
-            # Buscar funcionários (apenas para admin/funcionário)
-            if self.request.user.is_admin() or self.request.user.is_funcionario():
-                funcionarios = Funcionario.objects.select_related('user').filter(
-                    Q(id__icontains=query) |
-                    Q(user__first_name__icontains=query) |
-                    Q(user__last_name__icontains=query) |
-                    Q(user__cpf__icontains=query) |
-                    Q(matricula__icontains=query)
-                )[:20]
-                context['funcionarios'] = funcionarios
-            
-            # Buscar leituras
-            leituras = Leitura.objects.select_related('paciente__user', 'funcionario__user').filter(
-                Q(id__icontains=query) |
-                Q(paciente__user__first_name__icontains=query) |
-                Q(paciente__user__last_name__icontains=query) |
-                Q(paciente__user__cpf__icontains=query)
-            )[:20]
-            context['leituras'] = leituras
         
         return context
