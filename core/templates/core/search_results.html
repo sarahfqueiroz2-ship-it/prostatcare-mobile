@@ -1,0 +1,139 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Busca — ProstatCare Mobile{% endblock %}
+{% block page_title %}Resultados da Busca{% endblock %}
+{% block page_subtitle %}Buscando por: "{{ query }}"{% endblock %}
+
+{% block content %}
+
+<!-- Barra de busca -->
+<div class="card">
+  <form method="get" action="{% url 'core:search' %}" class="search-row">
+    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por ID, nome, CPF ou matrícula..." required>
+    <button type="submit" class="btn btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Buscar
+    </button>
+  </form>
+</div>
+
+{% if not query %}
+  <div class="card">
+    <p>Digite um termo para buscar (ID, nome, CPF, matrícula).</p>
+  </div>
+{% else %}
+
+<!-- Resultados: Pacientes -->
+<div class="card">
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Pacientes ({{ pacientes|length }})
+  </h3>
+  
+  {% if pacientes %}
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="background:var(--blue-lighter);border-bottom:1px solid var(--border);">
+          <th style="padding:8px 12px;text-align:left;">ID</th>
+          <th style="padding:8px 12px;text-align:left;">Nome</th>
+          <th style="padding:8px 12px;text-align:left;">CPF</th>
+          <th style="padding:8px 12px;text-align:left;">Dispositivo</th>
+          <th style="padding:8px 12px;text-align:left;">Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pacientes %}
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px 12px;"><strong>#{{ p.id }}</strong></td>
+            <td style="padding:8px 12px;">{{ p.user.get_full_name }}</td>
+            <td style="padding:8px 12px;">{{ p.user.cpf }}</td>
+            <td style="padding:8px 12px;">{{ p.dispositivo.id_dispositivo|default:"-" }}</td>
+            <td style="padding:8px 12px;">
+              <a href="{% url 'core:relatorio_paciente' p.id %}" class="btn btn-sm" style="padding:4px 12px;font-size:11px;">
+                Ver relatório
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="color:var(--gray);">Nenhum paciente encontrado.</p>
+  {% endif %}
+</div>
+
+<!-- Resultados: Funcionários (apenas admin/funcionário) -->
+{% if funcionarios %}
+<div class="card">
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Funcionários ({{ funcionarios|length }})
+  </h3>
+  
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="background:var(--blue-lighter);border-bottom:1px solid var(--border);">
+        <th style="padding:8px 12px;text-align:left;">ID</th>
+        <th style="padding:8px 12px;text-align:left;">Nome</th>
+        <th style="padding:8px 12px;text-align:left;">CPF</th>
+        <th style="padding:8px 12px;text-align:left;">Cargo</th>
+        <th style="padding:8px 12px;text-align:left;">Matrícula</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in funcionarios %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 12px;"><strong>#{{ f.id }}</strong></td>
+          <td style="padding:8px 12px;">{{ f.user.get_full_name }}</td>
+          <td style="padding:8px 12px;">{{ f.user.cpf }}</td>
+          <td style="padding:8px 12px;">{{ f.get_cargo_display }}</td>
+          <td style="padding:8px 12px;">{{ f.matricula }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Resultados: Leituras -->
+{% if leituras %}
+<div class="card">
+  <h3>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/></svg>
+    Leituras ({{ leituras|length }})
+  </h3>
+  
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="background:var(--blue-lighter);border-bottom:1px solid var(--border);">
+        <th style="padding:8px 12px;text-align:left;">ID</th>
+        <th style="padding:8px 12px;text-align:left;">Paciente</th>
+        <th style="padding:8px 12px;text-align:left;">Valor PSA</th>
+        <th style="padding:8px 12px;text-align:left;">Data</th>
+        <th style="padding:8px 12px;text-align:left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in leituras %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 12px;"><strong>#{{ l.id }}</strong></td>
+          <td style="padding:8px 12px;">{{ l.paciente.user.get_full_name }}</td>
+          <td style="padding:8px 12px;">{{ l.valor_psa }} ng/mL</td>
+          <td style="padding:8px 12px;">{{ l.data_leitura|date:"d/m/Y H:i" }}</td>
+          <td style="padding:8px 12px;">
+            {% if l.esta_acima_referencia %}
+              <span style="color:#D9564C;">⚠️ Acima</span>
+            {% else %}
+              <span style="color:#4FA3D9;">✅ Normal</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

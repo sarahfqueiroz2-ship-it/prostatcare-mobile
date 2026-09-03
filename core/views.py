@@ -272,3 +272,44 @@ def relatorio_pdf_view(request, paciente_id):
     if pisa_status.err:
         return HttpResponse('Erro ao gerar o PDF do relatório.', status=500)
     return response
+
+class SearchView(LoginRequiredMixin, TemplateView):
+    """Global search - busca por ID, CPF, Nome, Matrícula"""
+    template_name = 'core/search_results.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get('q', '').strip()
+        context['query'] = query
+        
+        if query and len(query) >= 1:
+            # Buscar pacientes por ID, Nome, CPF
+            pacientes = Paciente.objects.select_related('user', 'dispositivo').filter(
+                Q(id__icontains=query) |
+                Q(user__first_name__icontains=query) |
+                Q(user__last_name__icontains=query) |
+                Q(user__cpf__icontains=query)
+            )[:20]
+            context['pacientes'] = pacientes
+            
+            # Buscar funcionários (apenas para admin/funcionário)
+            if self.request.user.is_admin() or self.request.user.is_funcionario():
+                funcionarios = Funcionario.objects.select_related('user').filter(
+                    Q(id__icontains=query) |
+                    Q(user__first_name__icontains=query) |
+                    Q(user__last_name__icontains=query) |
+                    Q(user__cpf__icontains=query) |
+                    Q(matricula__icontains=query)
+                )[:20]
+                context['funcionarios'] = funcionarios
+            
+            # Buscar leituras
+            leituras = Leitura.objects.select_related('paciente__user', 'funcionario__user').filter(
+                Q(id__icontains=query) |
+                Q(paciente__user__first_name__icontains=query) |
+                Q(paciente__user__last_name__icontains=query) |
+                Q(paciente__user__cpf__icontains=query)
+            )[:20]
+            context['leituras'] = leituras
+        
+        return context
