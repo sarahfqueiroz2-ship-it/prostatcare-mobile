@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Pacientes — ProstatCare Mobile{% endblock %}
+{% block page_title %}Lista de Pacientes{% endblock %}
+{% block page_subtitle %}Todos os pacientes cadastrados no sistema{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="search-row">
+    <form method="get" action="{% url 'core:search' %}" style="display:flex;gap:10px;width:100%;">
+      <input type="text" name="q" placeholder="Buscar por ID, nome ou CPF..." style="flex:1;">
+      <button type="submit" class="btn btn-sm">Buscar</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead>
+      <tr style="background:var(--blue-lighter);border-bottom:2px solid var(--border);">
+        <th style="padding:10px 12px;text-align:left;">ID</th>
+        <th style="padding:10px 12px;text-align:left;">Nome</th>
+        <th style="padding:10px 12px;text-align:left;">CPF</th>
+        <th style="padding:10px 12px;text-align:left;">Dispositivo</th>
+        <th style="padding:10px 12px;text-align:left;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for paciente in pacientes %}
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 12px;"><strong style="color:var(--blue);">#{{ paciente.id }}</strong></td>
+          <td style="padding:10px 12px;">{{ paciente.user.get_full_name }}</td>
+          <td style="padding:10px 12px;">{{ paciente.user.cpf }}</td>
+          <td style="padding:10px 12px;">{{ paciente.dispositivo.id_dispositivo|default:"-" }}</td>
+          <td style="padding:10px 12px;">
+            <a href="{% url 'core:relatorio_paciente' paciente.id %}" class="btn btn-sm" style="padding:4px 12px;font-size:11px;">
+              Ver relatório
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" style="padding:20px;text-align:center;color:var(--gray);">
+            Nenhum paciente cadastrado.
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

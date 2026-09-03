@@ -46,3 +46,7 @@ class ClassificacaoAdmin(admin.ModelAdmin):
     list_display = ('leitura', 'nivel_risco', 'cor_hex', 'criado_em')
     list_filter = ('nivel_risco',)
     search_fields = ('leitura__paciente__nome_completo', 'leitura__paciente__cpf')
+
+class PacienteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'cpf', 'dispositivo', 'created_at')  # ← Adicione 'id'
+    list_display_links = ('id', 'user')  # ← Torna o ID clicável

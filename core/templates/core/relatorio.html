@@ -108,16 +108,16 @@
     </div>
   </div>
 
-  <h3>
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-    Dados do paciente
-  </h3>
-  <div class="kv" style="margin-bottom:18px;">
-    <div><span>Nome</span>{{ paciente.nome_completo }}</div>
-    <div><span>CPF</span>{{ paciente.cpf }}</div>
-    <div><span>ID</span>PAC-{{ paciente.id|stringformat:"04d" }}</div>
-    <div><span>Data de nascimento</span>{{ paciente.data_nascimento|date:"d/m/Y"|default:"—" }}</div>
-  </div>
+<h3>Dados do paciente</h3>
+<div class="kv" style="margin-bottom:18px;">
+  <div><span>ID (banco)</span><strong style="color:var(--blue);">{{ paciente.id }}</strong></div>
+  <div><span>ID de exibição</span>{{ paciente.id_display|default:"-" }}</div>
+  <div><span>Nome</span>{{ paciente.user.get_full_name }}</div>
+  <div><span>CPF</span>{{ paciente.user.cpf }}</div>
+  <div><span>Data de nascimento</span>{{ paciente.user.data_nascimento|date:"d/m/Y"|default:"-" }}</div>
+  <div><span>Dispositivo</span>{{ paciente.dispositivo.id_dispositivo|default:"Não vinculado" }}</div>
+  <div><span>Total de medições</span>{{ total_leituras|default:"0" }}</div>
+</div>
 
   <h3>
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>

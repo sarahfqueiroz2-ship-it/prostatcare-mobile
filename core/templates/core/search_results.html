@@ -45,7 +45,11 @@
       <tbody>
         {% for p in pacientes %}
           <tr style="border-bottom:1px solid var(--border);">
-            <td style="padding:8px 12px;"><strong>#{{ p.id }}</strong></td>
+<td style="padding:8px 12px;">
+  <strong style="color:var(--blue);font-size:16px;">#{{ p.id }}</strong>
+  <br>
+  <small style="color:var(--gray-light);">{{ p.id_display|default:"PAC-"|add:p.id }}</small>
+</td>
             <td style="padding:8px 12px;">{{ p.user.get_full_name }}</td>
             <td style="padding:8px 12px;">{{ p.user.cpf }}</td>
             <td style="padding:8px 12px;">{{ p.dispositivo.id_dispositivo|default:"-" }}</td>
