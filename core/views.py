@@ -285,13 +285,22 @@ class SearchView(LoginRequiredMixin, TemplateView):
         context['query'] = query
         
         if query and len(query) >= 1:
-            # Buscar pacientes por ID, Nome, CPF
-            pacientes = Paciente.objects.select_related('user', 'dispositivo').filter(
-                Q(id__icontains=query) |
-                Q(user__first_name__icontains=query) |
-                Q(user__last_name__icontains=query) |
-                Q(user__cpf__icontains=query)
-            )[:20]
-            context['pacientes'] = pacientes
+            # Buscar pacientes
+            pacientes = Paciente.objects.select_related('user', 'dispositivo')
+            
+            # Se for um número, buscar por ID exato
+            if query.isdigit():
+                try:
+                    paciente = pacientes.get(id=int(query))
+                    context['pacientes'] = [paciente]
+                except Paciente.DoesNotExist:
+                    context['pacientes'] = []
+            else:
+                # Buscar por texto (nome, CPF)
+                context['pacientes'] = pacientes.filter(
+                    Q(user__first_name__icontains=query) |
+                    Q(user__last_name__icontains=query) |
+                    Q(user__cpf__icontains=query)
+                )[:20]
         
         return context
