@@ -118,11 +118,11 @@
     <span>ID de exibição</span>
     <strong style="color:var(--blue-dark);">{{ paciente.id_display }}</strong>
   </div>
-  <div><span>Nome</span>{{ paciente.user.get_full_name }}</div>
-  <div><span>CPF</span>{{ paciente.user.cpf }}</div>
-  <div><span>Data de nascimento</span>{{ paciente.user.data_nascimento|date:"d/m/Y"|default:"-" }}</div>
-  <div><span>Dispositivo</span>{{ paciente.dispositivo.id_dispositivo|default:"Não vinculado" }}</div>
-  <div><span>Total de medições</span>{{ total_leituras|default:"0" }}</div>
+  <div><span>Nome</span>{{ paciente.nome_completo }}</div>
+  <div><span>CPF</span>{{ paciente.cpf }}</div>
+  <div><span>Data de nascimento</span>{{ paciente.data_nascimento|date:"d/m/Y"|default:"-" }}</div>
+  <div><span>Dispositivo</span>{{ paciente.dispositivo.identificador|default:"Não vinculado" }}</div>
+  <div><span>Total de medições</span>{{ leituras|length|default:"0" }}</div>
 </div>
 
   <h3>
