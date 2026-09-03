@@ -39,6 +39,15 @@ class Paciente(models.Model):
         Dispositivo, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='pacientes', help_text='Dispositivo normalmente usado por este paciente'
     )
+     # ← ADICIONE ESTA PROPRIEDADE
+    @property
+    def id_display(self):
+        """Retorna o ID formatado para exibição (ex: PAC-0001)"""
+        return f"PAC-{str(self.id).zfill(4)}"
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} ({self.id_display})"
+
 
     class Meta:
         ordering = ['nome_completo']

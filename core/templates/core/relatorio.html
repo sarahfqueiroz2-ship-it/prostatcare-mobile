@@ -50,7 +50,7 @@
 <div class="card">
   <h3>
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/></svg>
-    {{ paciente.nome_completo }} — CPF {{ paciente.cpf }} — ID PAC-{{ paciente.id|stringformat:"04d" }}
+    {{ paciente.nome_completo }} — CPF {{ paciente.cpf }} — ID {{ paciente.id_display }}
   </h3>
 
   {% if grafico %}
@@ -110,8 +110,14 @@
 
 <h3>Dados do paciente</h3>
 <div class="kv" style="margin-bottom:18px;">
-  <div><span>ID (banco)</span><strong style="color:var(--blue);">{{ paciente.id }}</strong></div>
-  <div><span>ID de exibição</span>{{ paciente.id_display|default:"-" }}</div>
+  <div>
+    <span>ID (banco)</span>
+    <strong style="color:var(--blue);font-size:16px;">#{{ paciente.id }}</strong>
+  </div>
+  <div>
+    <span>ID de exibição</span>
+    <strong style="color:var(--blue-dark);">{{ paciente.id_display }}</strong>
+  </div>
   <div><span>Nome</span>{{ paciente.user.get_full_name }}</div>
   <div><span>CPF</span>{{ paciente.user.cpf }}</div>
   <div><span>Data de nascimento</span>{{ paciente.user.data_nascimento|date:"d/m/Y"|default:"-" }}</div>
@@ -188,3 +194,4 @@
 {% endif %}
 {% endif %}
 {% endblock %}
+
